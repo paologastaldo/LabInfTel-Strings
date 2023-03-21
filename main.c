@@ -18,15 +18,16 @@ int main() {
 
 
 	char str[STR_SIZE];
-	char outstr[STR_SIZE];
+	int* hist;
 	char mos;
 	int occurrences;
 	char tosearch;
+	int rv;
 
 
 	printf("Enter text: ");
 	if (fgets(str, STR_SIZE, stdin) == NULL) {
-		printf("ERROR in Main: cannot read input tetx\n");
+		printf("ERROR in Main: cannot read input text\n");
 		return -1;
 
 	}
@@ -35,19 +36,46 @@ int main() {
 
 	printf("\nstring: %s\n", str);
 
-	MOSstring(str, STR_SIZE, &mos, &occurrences);
+	hist = Shist(str, STR_SIZE);
+	if ( hist == NULL ) {
+		printf("ERROR in Main: cannot compute histogram\n");
+		return -1;
+		
+	}
+
+	rv = MOSstring(hist, &mos, &occurrences); 
+	if (rv < 0) {
+		printf("ERROR in Main: cannot compute most occurring symbol\n");
+		return -1;
+
+		
+	}
+		
 	printf("The most occurring symbol is '%c' = %d times\n", mos, occurrences);
 
-	occurrences = AOstring(str, STR_SIZE);
+	occurrences = AOstring(hist);
+	if (occurrences < 0) {
+		printf("ERROR in Main: cannot compute the occurrences of alphabet symbols\n");
+		return -1;
+	}
 	printf("The string includes %d alphabet characters\n", occurrences);
 
-	occurrences = DOstring(str, STR_SIZE);
+	occurrences = DOstring(hist);
+	if (occurrences < 0) {
+		printf("ERROR in Main: cannot compute the occurrences of digits\n");
+		return -1;
+	}
 	printf("The string includes %d digits\n", occurrences);
 
 
 	printf("Enter a symbol: ");
 	tosearch = getchar();
-	occurrences = SOstring(str, STR_SIZE, tosearch);
+	occurrences = SOstring(hist, tosearch);
+	if (occurrences < 0) {
+		printf("ERROR in Main: cannot compute the occurrences of the symbol\n");
+		return -1;
+		
+	}
 
 	printf("Symbol -%c- appears %d times.", tosearch, occurrences);
 

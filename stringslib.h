@@ -7,14 +7,16 @@
 
 #ifndef STRINGSLIB_H 
 #define STRINGSLIB_H
+#include <stdio.h> 
+#include <stdlib.h> 
 
 #define HIST_BINS 256 /* Number of bins in the char histogram */
 
 
-
-void MOSstring(char* instr, int length, char* mos, int* occurrences);
-int SOstring(char* instr, int length, char tosearch);
-int DOstring(char* instr, int length);
-int AOstring(char* instr, int length);
+int* Shist(char* instr, int length);
+int MOSstring(int* hist, char* mos, int* occurrences);
+int SOstring(int* hist, char tosearch);
+int DOstring(int* hist);
+int AOstring(int* hist);
 
 #endif

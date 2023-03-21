@@ -1,5 +1,5 @@
 /*! \file stringslib.c
-    \brief Implementations of the functions declared in stringlib.h
+    \brief Implementations of the functions declared in stringslib.h
 
     Details.
 */
@@ -8,109 +8,132 @@
 
 #include "stringslib.h"
 
-/*!	@brief finds most occurent ASCII symbol in a string
+/*!	@brief computes the histogram of the ASCII symbol in a string
     @param instr input string
     @param length string length
-    @param moc most occuring character (pointer to)
-    @param occurrences frequency of the moc (pointer to)
-*/
-void MOSstring(char* instr, int length, char* mos, int* occurrences) {
+    @return pointer to the array that collects the occurrencies (the histogram), NULL if something went wrong
+ */
+int* Shist(char* instr, int length) {
 
-    int freq[HIST_BINS]; /* Store frequency of each character */
-    int i = 0;
-    int max = 0;
-    int ascii;
+    int i;
+    int hist[HIST_BINS];
+    unsigned int ascii;
 
-    /* Initializes frequency of all characters to 0 */
+    if (instr == NULL) {
+        printf("Error in Shist: null pointer");
+        return NULL;
+
+    }
+
+    /* Initializes frequency of all symbols to 0 */
     for (i = 0; i < HIST_BINS; i++)
-        freq[i] = 0;
+        hist[i] = 0;
 
-    /* Finds frequency of each character */
+    /* Finds frequency of each symbol */
     i = 0;
     while (instr[i] != '\0' && i < length)
     {
-        ascii = (int)instr[i];
-        freq[ascii] += 1;
+        ascii = (unsigned char)instr[i];
+        hist[ascii] += 1;
 
         i++;
     }
 
+    return hist;
+}
+
+/*! @brief finds most occurent ASCII symbol in a string by processing its histogram
+    @param hist pointer to the histogram computed on the string of interest
+    @param mos  most occurring symbol
+    @param occurrences occurrences of mos
+	@return 1 if everything is ok, -1 if something went wrong
+*/
+int MOSstring(int* hist, char* mos, int* occurrences) {
+
+    int i;
+    int max = 0;
+
+    if (hist == NULL) {
+        printf("Error in MOSstring: null pointer");
+        return -1;
+
+    }
 
     /* Finds maximum frequency */
     max = 0;
     for (i = 0; i < HIST_BINS; i++)
     {
-        if (freq[i] > freq[max])
+        if (hist[i] > hist[max])
             max = i;
     }
 
     *mos = (char)max;
-    *occurrences = freq[max];
+    *occurrences = hist[max];
 
-    return;
+    return 1;
 
 }
 
-/*! @brief finds in a string the occurrences of a given ASCII symbol
-    @param instr string
-    @param length of the string
-    @param tosearch the character
-    @return occurences of the character
+/*! @brief finds the occurrences of a given ASCII symbol in a string by processing its histogram
+    @param hist pointer to the histogram computed on the string of interest
+    @param tosearch the symbol
+    @return occurences of the symbol
 */
-int SOstring(char* instr, int length, char tosearch) {
+int SOstring(int* hist, char tosearch) {
 
-    int i = 0;
-    int occurrences = 0;
+    unsigned int ascii;
 
-    while (instr[i] != '\0' && i < length)
-    {
-        if (instr[i] == tosearch)
-            occurrences++;
+    if (hist == NULL) {
+        printf("Error in SOstring: null pointer");
+        return -1;
 
-        i++;
     }
+    ascii = (unsigned char)tosearch;
 
-    return occurrences;
+    return hist[ascii];
 }
 
-/*! @brief finds in a string the occurrences of digits
-    @param instr string
-    @param length of the string
+/*! @brief finds the occurrences of digits in a string by processing its histogram
+    @param hist pointer to the histogram computed on the string of interest
     @return occurences of digits
 */
-int DOstring(char* instr, int length) {
+int DOstring(int* hist) {
 
     int i = 0;
     int occurrences = 0;
 
-    while (instr[i] != '\0' && i < length)
-    {
-        if (instr[i] > 47 && instr[i] < 58)
-            occurrences++;
+    if (hist == NULL) {
+        printf("Error in SOstring: null pointer");
+        return -1;
 
-        i++;
     }
+
+
+    for (i = 47; i < 58; i++)
+        occurrences += hist[i];
 
     return occurrences;
 }
 
-/*! @brief finds in a string the occurrences of alphabet characters
-    @param instr string
-    @param length of the string
+/*! @brief finds the occurrences of alphabet characters in a string by processing its histogram
+    @param hist pointer to the histogram computed on the string of interest
     @return occurences of alphabet characters
 */
-int AOstring(char* instr, int length) {
+int AOstring(int* hist) {
 
     int i = 0;
     int occurrences = 0;
 
-    while (instr[i] != '\0' && i < length)
-    {
-        if ((instr[i] > 64 && instr[i] < 91) || (instr[i] > 96 && instr[i] < 123))
-            occurrences++;
+    if (hist == NULL) {
+        printf("Error in SOstring: null pointer");
+        return -1;
 
-        i++;
     }
+
+    for (i = 65; i < 91; i++)
+        occurrences += hist[i];
+    for (i = 97; i < 123; i++)
+        occurrences += hist[i];
 
     return occurrences;
 }
