@@ -12,15 +12,24 @@
     @param instr input string
     @param length string length
     @return pointer to the array that collects the occurrencies (the histogram), NULL if something went wrong
+
+    WARNING:the histogram is an array of size HIST_BINS that should be deallocated before leaving the program
  */
 int* Shist(char* instr, int length) {
 
     int i;
-    int hist[HIST_BINS];
+    int* hist;
     unsigned int ascii;
 
     if (instr == NULL) {
-        printf("Error in Shist: null pointer");
+        printf("\nError in Shist: null pointer\n");
+        return NULL;
+
+    }
+
+    hist = (int*)malloc(HIST_BINS * sizeof(int));
+    if (hist == NULL) {
+        printf("\nError in Shist: cannot allocate histogram\n");
         return NULL;
 
     }

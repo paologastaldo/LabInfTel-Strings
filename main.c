@@ -8,35 +8,53 @@
 #include <stdio.h> 
 #include <stdlib.h> 
 #include <string.h> 
-#include "stringslib.h"
+#include "stringslib.h" 
+#include "fileIO.h"
 
 
-#define STR_SIZE 1000 
+#define PATH_SIZE 1000
 
 
 int main() {
 
 
-	char str[STR_SIZE];
+	char filePath[PATH_SIZE]; 
+	char* str;
 	int* hist;
 	char mos;
 	int occurrences;
 	char tosearch;
 	int rv;
+	strtoken* listPtr;
 
-
-	printf("Enter text: ");
-	if (fgets(str, STR_SIZE, stdin) == NULL) {
-		printf("ERROR in Main: cannot read input text\n");
+	/* ******************************   */
+	printf("Enter input file: ");
+	if (fgets(filePath, PATH_SIZE, stdin) == NULL) {
+		printf("ERROR in Main: cannot open input file %s\n",filePath);
 		return -1;
 
 	}
 
-	str[strcspn(str, "\n")] = 0; // removes EOL from the string
+	filePath[strcspn(filePath, "\n")] = 0; // removes EOL from the string
+
+	/* ******************************   */
+
+
+	/* ******************************   */ 
+
+	listPtr = ReadLinesFromFile(filePath);
+	if (listPtr == NULL) {
+		printf("ERROR in Main: cannot read input file %s\n", filePath);
+		return -1;
+	}
+
+	str = listPtr->token;
+
+	/* ******************************   */
 
 	printf("\nstring: %s\n", str);
 
-	hist = Shist(str, STR_SIZE);
+	hist = Shist(str, TOKENL);
 	if ( hist == NULL ) {
 		printf("ERROR in Main: cannot compute histogram\n");
 		return -1;
@@ -79,6 +97,12 @@ int main() {
 
 	printf("Symbol -%c- appears %d times.", tosearch, occurrences);
 
+	/* ******************************   */
+	ClearList(listPtr);
+	if (hist != NULL)
+		free(hist);
+
+	/* ******************************   */
 
 	return 0;
 }
